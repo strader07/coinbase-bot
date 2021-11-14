@@ -1,0 +1,280 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style type="text/css">
+  table.dataTable tbody th, table.dataTable tbody td {
+    padding: 12px 10px !important;
+  }
+  table.dataTable thead th, table.dataTable thead td {
+      padding: 12px 10px !important;
+  }
+  .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .currency {
+    display: block;
+    width: 100%;
+    /*font-weight: bold;*/
+    font-size: 1rem;
+    color: #32325d;
+    background-clip: padding-box;
+    border: none;
+    box-shadow: none;
+    padding: 0 0.8rem;
+    background-color: #fff !important;
+  }
+  .currency-edit {
+    display: block;
+    width: 100%;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #32325d;
+    background-clip: padding-box;
+    border: 1px solid #cad1d7;
+    box-shadow: none;
+    padding: 0.625rem 0.75rem;
+    background-color: #fff !important;
+  }
+  .balance {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    color: #666;
+    background-clip: padding-box;
+    border: none;
+    box-shadow: none;
+    padding: 0 0.8rem;
+    background-color: #fff !important;
+  }
+  #select_port {
+    background: transparent;
+    border: none;
+    padding-left: 0px;
+    color: #5e72e4;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"/>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Header -->
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="toast notification alert alert-danger alert-dismissible border-0 fade show" role="alert" data-delay="3000">
+          
+            <span class="alert-icon border-0"><i class="ni ni-like-2"></i></span>
+            <span class="alert-text border-0">
+              <strong>Error!</strong>&nbsp;&nbsp; {{ message }}
+            </span>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% elif message.tags == 'info' %}
+          <div class="toast notification alert alert-info alert-dismissible border-0 fade show" role="alert" data-delay="2000">
+          
+            <span class="alert-icon border-0"><i class="ni ni-like-2"></i></span>
+            <span class="alert-text border-0">
+              <strong>Success!</strong>&nbsp;&nbsp; {{ message }}
+            </span>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endif %}
+          {% endfor %}
+          <!-- Card stats -->
+          <div class="row">
+            <div class="col-xl-3 col-lg-6">
+              <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-6">
+                      <input class="form-control" type="text" value="Select Portfolio" id="select_port" name="select_port" disabled>
+                    </div>
+                    <div class="col-6">
+                      <select class="form-control" name="active_portfolio" id="active_portfolio" required>
+                        {% for portfolio in portfolios %}
+                          <option value="{{portfolio.id}}">{{portfolio.name}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt--7">
+
+      <div class="row">
+        <div class="col">
+          <div class="card shadow">
+            <div class="card-header border-2">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Accounts</h3>
+                </div>
+                <div class="col text-right">
+                  <button class="btn btn-sm btn-primary btn-icon" type="button" data-toggle="modal" data-target="#modal-currencies">
+                    <span class="btn-inner--icon"><i class="ni ni-settings-gear-65"></i></span>
+                  </button>
+                  <a href="/update-account/" class="btn btn-sm btn-primary">Refresh</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table id="balance_table" class="table align-items-center table-flush table-striped" style="width:100%">
+                </table>
+
+    <script>
+        let balance_tbody = {{data | safe}};
+        var portfolio = document.getElementById("active_portfolio").value;
+
+        function createHeader(table){
+            headers = ['Currency', 'Balance', 'Hold', 'Available Qty', 'Prev. Balance', 'PercentChange (%)'];
+            let tHead = table.createTHead();
+            tHead.setAttribute('class', 'thead-light');
+            let row = tHead.insertRow();
+            for (val in headers){
+                let th =document.createElement('th');
+                let text = document.createTextNode(headers[val]);
+                th.appendChild(text);
+                th.setAttribute('scope', 'col');
+                row.appendChild(th);
+            }
+        }
+
+        function createtableBody(table, data, port_id){
+          console.log(port_id);
+          let tBody = table.appendChild(document.createElement('tbody'))
+          for (element in data){
+            if (data[element]["can_trade"]==true && data[element]["portfolio"]==parseInt(port_id)){
+              let row = tBody.insertRow();
+              for (key in data[element]){
+                if (typeof data[element][key] != "boolean" && key!="portfolio") {
+                  let cell = row.insertCell();
+                  let text = document.createTextNode(data[element][key]);
+                  cell.appendChild(text);
+                }
+              }
+            }
+          }
+        }
+
+        var balance_table = document.getElementById('balance_table');
+
+        createHeader(balance_table);
+        createtableBody(balance_table, balance_tbody, portfolio);
+
+    </script>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="modal-currencies" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-7" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title-default">Select currencies to be displayed</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">X</span>
+                </button>
+            </div>
+            <form id="form-currency" action="/tradecurrency-update/" method="POST">
+            {% csrf_token %}
+            <div class="modal-body container">
+            {% for list in currencies %}
+              <div class="row">
+                {% for element in list %}
+                <div class="col-4">
+                  <div class="custom-control custom-checkbox mb-3 mt-3 text-left">
+                    <input class="custom-control-input" id="{{element.currency}}" type="checkbox" name="{{element.currency}}" {% if element.can_trade %}checked{% endif %}>
+                    <label class="custom-control-label" for="{{element.currency}}">{{element.currency}}</label>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal" id="btn-currency-update">Save</button>
+                <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% include "includes/footer.html" %}
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#balance_table').DataTable();
+    } );
+
+    $(function () {
+        $('.toast').toast('show');
+    });
+
+    // var editBtn = document.getElementById('btnEditBalance');
+    // editBtn.addEventListener('click', function(){
+    //   document.getElementById('currency3').disabled = false;
+    //   document.getElementById('currency3').setAttribute("class", "form-control currency-edit");
+    // });
+
+    function continueOrNot() {
+      if (document.getElementById('currency3').disabled) {
+        document.getElementById('currency3').disabled = false;
+      }
+      return true;
+    }
+
+    document.getElementById("active_portfolio").addEventListener("change", function () {
+        var porfolio_id = this.value;
+        var balance_table = document.getElementById('balance_table');
+        balance_table.innerHTML = "";
+
+        let balance_tbody = {{data | safe}};
+        createHeader(balance_table);
+        createtableBody(balance_table, balance_tbody, porfolio_id);
+    });
+
+    // document.getElementById("currency_btnsave").addEventListener("click", function () {
+    //     document.getElementById("form-currency").submit();
+    // });
+
+    document.getElementById("btn-currency-update").addEventListener("click", function () {
+        document.getElementById("form-currency").submit();
+    });
+
+    // document.getElementById("trade_status").addEventListener("change", function () {
+    //     document.getElementById("form-tradestatus").submit();
+    // });
+
+</script>
+{% endblock javascripts %}

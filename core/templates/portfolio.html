@@ -1,0 +1,130 @@
+{% extends 'layouts/base-portfolio.html' %}
+
+{% load static %}
+
+{% block title %} Coinbas Pro Portfolios {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+<style type="text/css">
+
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Header -->
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="toast notification alert alert-danger alert-dismissible border-0 fade show" role="alert" data-delay="3000">
+          
+            <span class="alert-icon border-0"><i class="ni ni-like-2"></i></span>
+            <span class="alert-text border-0">
+              <strong>Error!</strong>&nbsp;&nbsp; {{ message }}
+            </span>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% elif message.tags == 'info' %}
+          <div class="toast notification alert alert-info alert-dismissible border-0 fade show" role="alert" data-delay="2000">
+          
+            <span class="alert-icon border-0"><i class="ni ni-like-2"></i></span>
+            <span class="alert-text border-0">
+              <strong>Success!</strong>&nbsp;&nbsp; {{ message }}
+            </span>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt--7">
+
+      <div class="row">
+        <div class="col-xl-12 mb-5 mb-xl-0">
+          <div class="card shadow">
+            <!-- Card header -->
+              <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                  <div class="col-7">
+                    <h3 class="text-primary mb-0">Coinbase Pro Portfolios</h3>
+                  </div>
+                  <div class="col-5 text-right">
+                    <a href="/portfolio/new/" class="btn btn-primary btn-sm" role="button" aria-pressed="true">New</a>
+                    <a href="/portfolio/delall/" class="btn btn-danger btn-sm" role="button" aria-pressed="true" onclick="return confirmDeleteAll();">Del all</a>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Name</th>
+                        <th>Account Type</th>
+                        <th>Pass Phrase</th>
+                        <th>API Key</th>
+                        <th>API Secret</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in portfolios %}
+                        <tr>
+                          <td>{{ item.name }}</td>
+                          <td>{{ item.acc_type }}</td>
+                          <td>{{ item.passphrase }}</td>
+                          <td>{{ item.api_key }}</td>
+                          <td>{{ item.api_secret }}</td>
+                          <td>
+                            <a href="/portfolio/edit/{{item.id}}" class="btn-primary btn-sm" role="button" aria-pressed="true">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <span>&nbsp;</span>
+                            <a href="/portfolio/del/{{item.id}}" class="btn-danger btn-sm" role="button" aria-pressed="true" onclick="return confirmDeleteOne();">
+                              <i class="fas fa-trash"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+
+{% block javascripts %}
+<script>
+  $(function () {
+    $('.toast').toast('show');
+  });
+
+  function confirmDeleteOne() {
+    return confirm("Are you sure you want to delete an item?");
+  }
+  function confirmDeleteAll() {
+    return confirm("Are you sure you want to delete all positions?");
+  }
+</script>
+
+{% endblock javascripts %}
+

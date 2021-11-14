@@ -1,0 +1,118 @@
+{% extends 'layouts/base-bots.html' %}
+
+{% load static %}
+
+{% block title %} New bot {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+<style type="text/css">
+
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Header -->
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt--7">
+
+      <div class="row">
+        <div class="col-xl-12 mb-5 mb-xl-0">
+          <div class="card shadow">
+            <!-- Card header -->
+            <form method="POST" action="{% url 'new_bot' %}" id="">
+              {% csrf_token %}
+              <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                  <div class="col-7">
+                    <h3 class="text-primary mb-0">New bot</h3>
+                  </div>
+                  <div class="col-5 text-right">
+                    <button type="submit" class="btn btn-sm btn-primary" id="btnCreatePortfolio">Save</button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-4">
+                      <div class="form-group">
+                        <label for="name" class="form-control-label">Name</label>
+                        <input class="form-control" type="text" value="" id="name" name="name" required>
+                      </div>
+                  </div>
+                  <div class="col-lg-4">
+                      <div class="form-group">
+                          <label for="portfolio" class="form-control-label">Portfolio</label>
+                          <select class="form-control" name="portfolio" id="portfolio" required>
+                            {% for portfolio in portfolios %}
+                            <option value="{{portfolio.id}}">{{portfolio.name}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="symbol" class="form-control-label">Symbol</label>
+                      <input class="form-control" type="text" value="" id="symbol" name="symbol" step="any" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="timeframe" class="form-control-label">Timeframe</label>
+                      <select class="form-control" name="timeframe" id="timeframe" required>
+                        <option value="1min">1min</option>
+                        <option value="5min">5min</option>
+                        <option value="15min">15min</option>
+                        <option value="30min">30min</option>
+                        <option value="45min">45min</option>
+                        <option value="1h">1h</option>
+                        <option value="2h">2h</option>
+                        <option value="4h">4h</option>
+                        <option value="1day">1day</option>
+                        <option value="1week">1week</option>
+                        <option value="1month">1month</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="price_var" class="form-control-label">Price Variation (%)</label>
+                      <input class="form-control" type="number" value="" id="price_var" name="price_var" step="any" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="custom-control custom-checkbox">
+                      <br/>
+                      <input type="checkbox" class="custom-control-input" id="is_active" name="is_active">
+                      <label class="custom-control-label" for="is_active">Make it active?</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+
+{% block javascripts %}
+<script>
+</script>
+{% endblock javascripts %}

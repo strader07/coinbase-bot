@@ -1,0 +1,120 @@
+{% extends 'layouts/base-bots.html' %}
+
+{% load static %}
+
+{% block title %} Edit bot {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+<style type="text/css">
+
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Header -->
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt--7">
+
+      <div class="row">
+        <div class="col-xl-12 mb-5 mb-xl-0">
+          <div class="card shadow">
+            <!-- Card header -->
+            <form method="POST" action="/bot/edit/{{pk}}" id="">
+              {% csrf_token %}
+              <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                  <div class="col-7">
+                    <h3 class="text-primary mb-0">Update bot</h3>
+                  </div>
+                  <div class="col-5 text-right">
+                    <a href="{% url 'get_bots' %}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">Cancel</a>
+                    <button type="submit" class="btn btn-sm btn-primary" id="btnSavePortfolio">Save</button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-4">
+                      <div class="form-group">
+                        <label for="name" class="form-control-label">Name</label>
+                        <input class="form-control" type="text" value="{{bot.name}}" id="name" name="name" required>
+                      </div>
+                  </div>
+                  <div class="col-lg-4">
+                      <div class="form-group">
+                          <label for="portfolio" class="form-control-label">Portfolio</label>
+                          <select class="form-control" name="portfolio" id="portfolio" required>
+                            {% for portfolio in portfolios %}
+                            <option value="{{portfolio.id}}" {% ifequal bot.portfolio.id portfolio.id %} selected="selected"{% endifequal %}>{{portfolio.name}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="symbol" class="form-control-label">Symbol</label>
+                      <input class="form-control" type="text" value="{{bot.symbol}}" id="symbol" name="symbol" step="any" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="timeframe" class="form-control-label">Timeframe</label>
+                      <select class="form-control" name="timeframe" id="timeframe" required>
+                        <option value="1min" {% ifequal bot.timeframe "1min" %} selected="selected"{% endifequal %}>1min</option>
+                        <option value="5min" {% ifequal bot.timeframe "5min" %} selected="selected"{% endifequal %}>5min</option>
+                        <option value="15min" {% ifequal bot.timeframe "15min" %} selected="selected"{% endifequal %}>15min</option>
+                        <option value="30min" {% ifequal bot.timeframe "30min" %} selected="selected"{% endifequal %}>30min</option>
+                        <option value="45min" {% ifequal bot.timeframe "45min" %} selected="selected"{% endifequal %}>45min</option>
+                        <option value="1h" {% ifequal bot.timeframe "1h" %} selected="selected"{% endifequal %}>1h</option>
+                        <option value="2h" {% ifequal bot.timeframe "2h" %} selected="selected"{% endifequal %}>2h</option>
+                        <option value="4h" {% ifequal bot.timeframe "4h" %} selected="selected"{% endifequal %}>4h</option>
+                        <option value="1day" {% ifequal bot.timeframe "1day" %} selected="selected"{% endifequal %}>1day</option>
+                        <option value="1week" {% ifequal bot.timeframe "1week" %} selected="selected"{% endifequal %}>1week</option>
+                        <option value="1month" {% ifequal bot.timeframe "1month" %} selected="selected"{% endifequal %}>1month</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label for="price_var" class="form-control-label">Price Variation (%)</label>
+                      <input class="form-control" type="number" value="{{bot.price_var}}" id="price_var" name="price_var" step="any" required>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="custom-control custom-checkbox">
+                      <br/>
+                      <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" {% if bot.is_active %}checked{% endif %}>
+                      <label class="custom-control-label" for="is_active">Make it active?</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+
+{% block javascripts %}
+<script>
+</script>
+{% endblock javascripts %}
+

@@ -1,0 +1,18 @@
+
+- Move current setup on tradingview to the bot dashboard
+(10 hours)
+
+- Crypto data API integration (https://twelvedata.com/)
+- Options to choose pairs, choose timeframe, enter price variation
+(10 hours)
+
+- Options add/edit/delete bot configurations, options to turn on/off each configuration
+(13 hours)
+
+- Add/edit/remove cb portfolios to manage different trading
+(Setting up a portfolio, we will need to add api keys to the dashboard.)
+(7 hours)
+
+- Options to manage swap trading, scalp trading, and swing trading
+- Some additional configurations for scalp and swing trading depending on the indicators (or strategies) to be used
+(hours to be determined after your confirmation)
